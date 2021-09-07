@@ -5,6 +5,84 @@ const chunk = require(`lodash/chunk`)
 // dd() will prettily dump to the terminal and kill the process
 // const { dd } = require(`dumper.js`)
 
+// exports.createResolvers = ({ actions, cache, createNodeId, createResolvers, getNode, store, reporter }) => {
+//   const { createNode, touchNode } = actions;
+
+  // Add all media libary images so they can be queried by
+  // childImageSharp
+//   createResolvers({
+//     WPGraphQL_MediaItem: {
+//       imageFile: {
+//         type: `File`,
+//         async resolve(source, args, context, info) {
+//           if (source.sourceUrl) {
+//             let fileNodeID;
+//             let fileNode;
+//             let sourceModified;
+
+//             // Set the file cacheID, get it (if it has already been set)
+//             const mediaDataCacheKey = `wordpress-media-${source.mediaItemId}`;
+//             const cacheMediaData = await cache.get(mediaDataCacheKey);
+
+//             if (source.modified) {
+//               sourceModified = source.modified;
+//             }
+
+//             // If we have cached media data and it wasn't modified, reuse
+//             // previously created file node to not try to redownload
+//             if (cacheMediaData && sourceModified === cacheMediaData.modified) {
+//               fileNode = getNode(cacheMediaData.fileNodeID);
+
+//               // check if node still exists in cache
+//               // it could be removed if image was made private
+//               if (fileNode) {
+//                 fileNodeID = cacheMediaData.fileNodeID;
+//                 // https://www.gatsbyjs.org/docs/node-creation/#freshstale-nodes
+//                 touchNode({
+//                   nodeId: fileNodeID
+//                 });
+//               }
+//             }
+
+//             // If we don't have cached data, download the file
+//             if (!fileNodeID) {
+//               try {
+//                 // Get the filenode
+//                 fileNode = await createRemoteFileNode({
+//                   url: source.sourceUrl,
+//                   store,
+//                   cache,
+//                   createNode,
+//                   createNodeId,
+//                   reporter
+//                 });
+
+//                 if (fileNode) {
+//                   fileNodeID = fileNode.id;
+
+//                   await cache.set(mediaDataCacheKey, {
+//                     fileNodeID,
+//                     modified: sourceModified
+//                   });
+//                 }
+//               } catch (e) {
+//                 // Ignore
+//                 console.log(e);
+//                 return null;
+//               }
+//             }
+
+//             if (fileNode) {
+//               return fileNode;
+//             }
+//           }
+//           return null;
+//         }
+//       }
+//     }
+//   });
+// }
+
 /**
  * exports.createPages is a built-in Gatsby Node API.
  * It's purpose is to allow you to create pages for your site! 💡
@@ -24,11 +102,11 @@ exports.createPages = async gatsbyUtilities => {
 }
 
 /**
- * This function creates all the individual blog pages in this site
+ * This function creates all the individual blog pages in this site *IMPORTANT*  MUST PRECEDE createPages()
  */
 const createIndividualBlogPostPages = async ({ posts, gatsbyUtilities }) =>
   Promise.all(
-    posts.map(({ previous, post, next }) =>
+    posts.map(({ post }) =>
       // createPage is an action passed to createPages
       // See https://www.gatsbyjs.com/docs/actions#createPage for more info
       gatsbyUtilities.actions.createPage({
@@ -48,8 +126,8 @@ const createIndividualBlogPostPages = async ({ posts, gatsbyUtilities }) =>
           id: post.id,
 
           // We also use the next and previous id's to query them and add links!
-          previousPostId: previous ? previous.id : null,
-          nextPostId: next ? next.id : null,
+          // previousPostId: previous ? previous.id : null,
+          // nextPostId: next ? next.id : null,
         },
       })
     )
@@ -57,7 +135,9 @@ const createIndividualBlogPostPages = async ({ posts, gatsbyUtilities }) =>
 
 const createPages = async ({ pages, gatsbyUtilities }) =>
   Promise.all(
-    pages.map(({ page }) => {
+    pages.filter(({ page }) =>
+      !page.specialIssue.isSpecialIssue ? true : false
+    ).map(({ page }) => {
       if (!!page.issue.isIssuePage) {
         gatsbyUtilities.actions.createPage({
           path: `${page.uri}`,
@@ -67,7 +147,7 @@ const createPages = async ({ pages, gatsbyUtilities }) =>
           },
         })
       }
-      else if (!!page.editorialBoard.ed1.givenName) {
+      else if (!!page.editorialBoard.ed1.givenName && !!page.editorialBoard.ed1.surname && !!page.editorialBoard.ed1.headshot.mediaItemUrl) {
         gatsbyUtilities.actions.createPage({
           path: `${page.uri}`,
           component: path.resolve(`./src/templates/about.js`),
@@ -156,22 +236,11 @@ async function createBlogPostArchive({ posts, gatsbyUtilities }) {
 async function getPosts({ graphql, reporter }) {
   const graphqlResult = await graphql(`
     query WpPosts {
-      # Query all WordPress blog posts sorted by date
       allWpPost(sort: { fields: [date], order: DESC }) {
         edges {
-          previous {
-            id
-          }
-
-          # note: this is a GraphQL alias. It renames "node" to "post" for this query
-          # We're doing this because this "node" is a post! It makes our code more readable further down the line.
           post: node {
             id
             uri
-          }
-
-          next {
-            id
           }
         }
       }
@@ -202,9 +271,16 @@ async function getPages({ graphql, reporter }) {
             issue {
               isIssuePage
             }
+            specialIssue {
+              isSpecialIssue
+            }
             editorialBoard {
               ed1 {
+                headshot {
+                    mediaItemUrl
+                }
                 givenName
+                surname
               }
             }
           }

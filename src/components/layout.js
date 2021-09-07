@@ -1,14 +1,13 @@
 import React from "react"
 import Header from "./header.js"
 import Footer from "./footer.js"
-import Headroom from "react-headroom"
 
-const Layout = ({ children }) => {
+const Layout = ({ children, template, title }) => {
   return (
-    <div>
-      <Headroom>
-        <Header />
-      </Headroom>
+    <div className="global-layout">
+      {/* <Headroom> */}
+        <Header template = {template} title = {title} />
+      {/* </Headroom> */}
       
       <main className="global-wrapper">{children}</main>
 

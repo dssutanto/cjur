@@ -1,5 +1,5 @@
 import React from "react"
-import { Link, graphql } from "gatsby"
+import { graphql } from "gatsby"
 import parse from "html-react-parser"
 
 // We're using Gutenberg so we need the block styles
@@ -11,16 +11,16 @@ import "../css/@wordpress/block-library/build-style/style.css"
 import "../css/@wordpress/block-library/build-style/theme.css"
 
 import Layout from "../components/layout"
-import Seo from "../components/seo"
+// import Seo from "../components/seo"
 
 const PageTemplate = ({ data: { page } }) => {
 
     return (
-        <Layout>
-                <header className="issue-header">
-                    <h1 className="main-heading" itemProp="headline">{parse(page.title)}</h1>
+        <Layout title={page.title}>
+                <header>
+                        <h1 className="main-heading" itemProp="headline">{parse(page.title)}</h1>
                 </header>
-                <article>
+                <article className="default-page">
                         {parse(page.content)}
                 </article>
         </Layout>

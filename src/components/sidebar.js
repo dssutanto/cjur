@@ -1,5 +1,4 @@
 import React from "react"
-// import styles from "./tabs.module.css"
 import { useState } from "react"
 
 const Sidebar = ({ children }) => {
@@ -10,6 +9,8 @@ const Sidebar = ({ children }) => {
         e.preventDefault();
         setActiveTab(newActive);
     }
+
+    // var activePanel = null
 
     return (
         <div className="tabs-component">
@@ -30,8 +31,16 @@ const Sidebar = ({ children }) => {
                     );
                 })}
             </ul>
+            {/* {activePanel = children.find(element => element.props.label === activeTab)}
+            <div
+                key={activePanel.props.label}
+                className="metadata"
+            >
+                {activePanel.props.children}
+                <p>{parse(activePanel.props.label)}</p>
+            </div> */}
             {children.map((content) => {
-                if (content.props.label === activeTab)
+                if (content.props.label === activeTab) {
                     return (
                         <div
                             key={content.props.label}
@@ -39,9 +48,13 @@ const Sidebar = ({ children }) => {
                         >
                             {content.props.children}
                         </div>
-                    );
+                    )
+                    // break
                 }
-            )}
+                else {
+                    return null
+                }
+            })}
         </div>
     )
 }

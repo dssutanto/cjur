@@ -75,7 +75,7 @@ module.exports = {
         background_color: `#ffffff`,
         theme_color: `#663399`,
         display: `minimal-ui`,
-        icon: `content/assets/CJUR-white.svg`,
+        icon: `content/assets/CJUR-white.png`,
       },
     },
 
@@ -87,5 +87,13 @@ module.exports = {
      * To learn more, visit: https://gatsby.dev/offline
      */
     // `gatsby-plugin-offline`,
+
+    {
+      resolve: `gatsby-plugin-remote-images`,
+      options: {
+        nodeType: 'MyNodes',
+        imagePath: 'path.to.image',
+      },
+    },
   ],
 }
