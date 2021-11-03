@@ -1,55 +1,35 @@
-import React, { useState } from "react"
-import Modal from "./modal"
+import React/*, { useState }*/ from "react"
+// import Modal from "./modal"
 import parse from "html-react-parser"
 
-const Fig = ({ figure, type }) => {
+const Fig = ({ figure }) => {
 
-    const [showModal, setShowModal] = useState(false)
-    const openModal = () => setShowModal(prev => !prev)
+    // const [showModal, setShowModal] = useState(false)
+    // const openModal = () => setShowModal(prev => !prev)
 
     return (
         <div className="fig-container">
             <figure>
-                {type === "table" ?
-                    <a href={"#" + figure.title} onClick={openModal} className="show-table">
-                        {/* <img src={domtoimage.toPng(domTable)} alt={table.title} /> */}
-                        Show table
-                    </a>
-                    :
-                    <a href={"#" + figure.altText} onClick={openModal}>
-                        <img src={figure.mediaItemUrl} alt={figure.altText} />
-                    </a>
-                }
+                <div>
+                    {parse(figure.table)}
+                </div>
                 <figcaption>
                     <strong className="figcaption-leader">
-                        {type === "table" ?
-                            parse(figure.title)
-                            :
-                            parse(figure.altText)
-                        }
+                        {parse(figure.title)}
                     </strong> &nbsp;
                     {parse(figure.caption)}
                 </figcaption>
             </figure>
-            <Modal showModal={showModal}>
+            {/* <Modal showModal={showModal}>
                 <div className="fig-modal">
                     <div className="fig-modal-container">
                         <div className="fig-modal-img-container">
-                            {type === "table" ?
-                                parse(figure.table)
-                                /* <img src={domtoimage.toPng(domTable)} alt={table.title} /> */
-                                :
-                                <img src={figure.mediaItemUrl} alt={figure.altText} />
-                            }
+                            {parse(figure.table)}
                         </div>
                         <div className="fig-modal-caption">
                             <div className="fig-modal-caption-wrapper">
                                 <span className="fig-modal-caption-title">
-                                    {type === "table" ?
-                                        parse(figure.title)
-                                        :
-                                        parse(figure.altText)
-                                    }
+                                    parse(figure.title)
                                 </span>
                                 <br />
                                 <section className="fig-modal-caption-text">{parse(figure.caption)}</section>
@@ -58,7 +38,7 @@ const Fig = ({ figure, type }) => {
                         </div>
                     </div>
                 </div>
-            </Modal>
+            </Modal> */}
         </div>
     )
 }

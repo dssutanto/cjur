@@ -1,23 +1,73 @@
 import React from "react"
 import { Link, graphql } from "gatsby"
-// import parse from "html-react-parser"
+import parse from "html-react-parser"
 
 import Layout from "../components/layout"
 import ArticleCard from "../components/articlecard"
 
-const HomePage = ({ data: { current, top, posts } }) => {
+const HomePage = ({ data: { current, special, top, posts } }) => {
   var currentIssue = current.nodes[0]
+
   currentIssue.issue.releasedDate = new Date(
     currentIssue.issue.released.substring(0, 4),
     currentIssue.issue.released.substring(4, 6)
-  ).toLocaleString('default', { month: 'long'})
+  ).toLocaleString('default', { month: 'long' })
+
+  const currentArticles = posts.nodes.filter((article) =>
+    article.articleMetadata.articleData.issue.issue.status === "Current" ? true : false
+  )
+
+  const latestArticles = []
+  for (let i = 0; i <= 5; i++) {
+    latestArticles.push(posts.nodes[i])
+  }
+
+  const specialIssue = special.nodes[0];
+  specialIssue.releasedDate = new Date(
+    specialIssue.specialIssue.published.substring(0, 4),
+    specialIssue.specialIssue.published.substring(4, 6)
+  ).toLocaleString('default', { month: 'long' })
+
+  // const currentLeader = currentArticles.find((article) =>
+  //   article.articleMetadata.articleData.issue.issue.leadArticle.id === currentIssue.issue.leadArticle.id
+  // && console.log("Leader of this article's issue" + article.articleMetadata.articleData.issue.issue.leadArticle.title)
+  // )
+  // currentArticles.splice(indexOf(currentArticles, currentLeader), 1)
+  // console.log(currentLeader.title)
+
+  // backIssues.map((issue) =>
+  //   issue.issue.releaseDate = new Date(
+  //     issue.issue.released.substring(0, 4),
+  //     issue.issue.released.substring(4, 6)
+  //   ).toLocaleString('default', { month: 'long', year: 'numeric' })
+  // )
+
+  // specials.map((issue) =>
+  //   issue.specialIssue.publishedDate = new Date(
+  //     issue.specialIssue.published.substring(0, 4),
+  //     issue.specialIssue.published.substring(4, 6)
+  //   ).toLocaleString('default', { month: 'long', year: 'numeric' })
+  // )
+
   return (
-    <Layout style={{ padding: "0" }}>
+    <Layout title="Home" style={{ padding: "0" }}>
       <div className="issue-header" style={{ backgroundImage: `url(${currentIssue.issue.heroBanner.staticFile.publicURL})` }}>
         <h1>Our {currentIssue.issue.releasedDate} issue out now</h1>
         <div className="hero-buttons">
-          <button href={currentIssue.uri} className="dark" style={{ fontSize:"var(--fontSize-2)"}}>Read</button>
-          <button href={currentIssue.issue.pdfLink.staticFile.publicURL} className="dark" style={{ fontSize:"var(--fontSize-2)"}}>Download PDF</button>
+          <a href={currentIssue.uri}>
+            <button className="dark" style={{
+              width: "var(--spacing-32)",
+              margin: "var(--spacing-2)",
+              fontSize: "var(--fontSize-3)"
+            }}>Read</button>
+          </a>
+          <a href={currentIssue.issue.pdfLink.staticFile.publicURL}>
+            <button className="dark" style={{
+              width: "var(--spacing-32)",
+              margin: "var(--spacing-2)",
+              fontSize: "var(--fontSize-3)"
+            }}>Download</button>
+          </a>
         </div>
       </div>
       <article className="home-body">
@@ -41,18 +91,56 @@ const HomePage = ({ data: { current, top, posts } }) => {
           </Link>
         </section>
         <section className="index-section">
-          <h2>Latest article</h2>
-          <ArticleCard
-            uri={posts.nodes[0].uri}
-            title={posts.nodes[0].title}
-            authorData={posts.nodes[0].articleMetadata.authorData}
-            pdf={posts.nodes[0].articleMetadata.articleData.pdfLink.staticFile.publicURL}
-            citation={posts.nodes[0].articleMetadata.articleData.citation}
-            abstract={posts.nodes[0].articleMetadata.articleData.abstract}
-          />
+          <h2>Latest articles</h2>
+          {latestArticles.map((post) => {
+            return (
+              <ArticleCard
+                key={post.uri}
+                uri={post.uri}
+                title={post.title}
+                authorData={post.articleMetadata.authorData}
+                pdf={post.articleMetadata.articleData.pdfLink.staticFile.publicURL}
+                citation={post.articleMetadata.articleData.citation}
+                date={post.articleMetadata.articleData.publicationDate}
+                authorsOnly={true}
+              />
+            )
+          })}
         </section>
+        <div className="index-section">
+          <h2>Current Issue: <span className="current-issue-title"><a href={currentIssue.uri}>{currentIssue.issue.releasedDate}: {parse(currentIssue.title)}</a></span></h2>
+          <div className="issue-big">
+            <div className="issue-big-cover"><img src={currentIssue.issue.cover.staticFile.publicURL} alt="" className="cover issue" /></div>
+            <div className="latest-articles">
+              {currentArticles.map(article => {
+                return (
+                  <ArticleCard
+                    key={article.uri}
+                    uri={article.uri}
+                    title={parse(article.title)}
+                    authorData={article.articleMetadata.authorData}
+                    pdf={article.articleMetadata.articleData.pdfLink.staticFile.publicURL}
+                    abstract={parse(article.articleMetadata.articleData.abstract)}
+                    citation={parse(article.articleMetadata.articleData.citation)}
+                    date={article.articleMetadata.articleData.publicationDate}
+                    authorsOnly={true}
+                  />
+                )
+              })}
+            </div>
+          </div>
+        </div>
+        <div className="index-section">
+          <h2>Special Edition: <span className="current-issue-title"><a href={specialIssue.specialIssue.pdfLink.staticFile.publicURL}>{specialIssue.releasedDate}: {parse(specialIssue.title)}</a></span></h2>
+          <div className="issue-big">
+            <div className="issue-big-cover"><img src={specialIssue.specialIssue.cover.staticFile.publicURL} alt="" className="cover special" /></div>
+            <div className="latest-articles" style={{ fontFamily: 'var(--fontFamily-sans)', fontWeight: '300' }}>
+              {specialIssue.specialIssue.description}
+            </div>
+          </div>
+        </div>
       </article>
-    </Layout>
+    </Layout >
   )
 }
 
@@ -65,6 +153,7 @@ export const pageQuery = graphql`
     ) {
       nodes {
         uri
+        title
         issue {
           released
           cover {
@@ -83,6 +172,27 @@ export const pageQuery = graphql`
             }
           }
         }
+      }
+    }
+    special: allWpPage(
+      filter: { specialIssue: { isSpecialIssue: { eq: true } } }
+    ) {
+      nodes {
+        specialIssue {
+          description
+          published
+          cover {
+            staticFile {
+              publicURL
+            }
+          }
+          pdfLink {
+            staticFile {
+              publicURL
+            }
+          }
+        }
+        title
       }
     }
     top: allWpPage(
@@ -120,6 +230,14 @@ export const pageQuery = graphql`
               }
             }
             citation
+            issue {
+              ... on WpPage {
+                issue {
+                  status
+                }
+              }
+            }
+            publicationDate
           }
           authorData {
             author1 {
@@ -184,6 +302,11 @@ export const pageQuery = graphql`
             }
           }
         }
+      }
+    }
+    allFile {
+      nodes {
+        publicURL
       }
     }
   }

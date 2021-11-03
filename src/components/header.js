@@ -5,10 +5,8 @@ import whiteText from "../../content/assets/CJUR-head-text-white.png"
 import whiteLogo from "../../content/assets/CJUR-white.png"
 import greenText from "../../content/assets/CJUR-head-text-moss.png"
 import greenLogo from "../../content/assets/CJUR-moss.png"
-import { IoIosMenu, IoMdClose } from "react-icons/io"
-const green = {
-  color: "#74846c"
-}
+import { IoIosMenu } from "react-icons/io"
+const green =  "#74846cdd"
 
 const Header = ({ template, title }) => {
   const { allWpPage } = useStaticQuery(graphql`
@@ -44,40 +42,56 @@ const Header = ({ template, title }) => {
     <header className="global-header">
       {showHamburger ?
         <div className="hamburger-menu provisional" style={{ display: "none" }}>
-          <div className="menu-label">
-            <Link to="/">Home</Link>
-          </div>
+          {
+            title === "Home" ?
+              <Link to="/">
+                <div className="menu-label" style={{ backgroundColor: green}}>
+                  Home
+                </div>
+              </Link>
+              :
+              <Link to="/">
+                <div className="menu-label">
+                  Home
+                </div>
+              </Link>
+          }
           {
             title === "Browse" ?
-              <div className="menu-label">
-                <Link to="/browse" style={green}>Browse</Link>
-              </div>
+              <Link to="/browse">
+                <div className="menu-label" style={{ backgroundColor: green}}>
+                  Browse
+                </div>
+              </Link>
               :
-              <div className="menu-label">
-                <Link to="/browse">Browse</Link>
-              </div>
+              <Link to="/browse">
+                <div className="menu-label">
+                  Browse
+                </div>
+              </Link>
           }
           {
             pages.map(page => {
               if (title === parse(page.title)) {
                 return (
-                  <div className="menu-label" key={page.uri}>
-                    <a href={page.uri} style={green}>
+                  <a href={page.uri}>
+                    <div className="menu-label" key={page.uri} style={{ backgroundColor: green}}>
                       {parse(page.title)}
-                    </a>
-                  </div>
+                    </div>
+                  </a>
                 )
               } else {
                 return (
-                  <div className="menu-label" key={page.uri}>
-                    <a href={page.uri}>
+                  <a href={page.uri}>
+                    <div className="menu-label" key={page.uri}>
                       {parse(page.title)}
-                    </a>
-                  </div>
+                    </div>
+                  </a>
                 )
               }
             })
           }
+          <div aria-hidden="true" className="menu-label" key="back" onClick={() => setShowHamburger(false)} onKeyDown={() => setShowHamburger(false)}>Back</div>
         </div>
         :
         null
@@ -96,23 +110,33 @@ const Header = ({ template, title }) => {
           className="header-logo"
           id="header-logo-main"
         />
-        <img
-          src={active ? greenText : whiteText}
-          alt="home"
+        {/* {
+          template==="article" && document.documentElement.scrollTop >= 25 ?
+          <span
           className="header-logo"
           id="header-logo-text"
-        />
+          style={{
+            fontFamily: "var(--fontFamily-serif)",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+            fontWeight: "normal",
+            maxWidth: "18rem"
+          }}>Article: {title}</span>
+          : */}
+          <img
+            src={active ? greenText : whiteText}
+            alt="home"
+            className="header-logo"
+            id="header-logo-text"
+          />
+        {/* } */}
       </Link>
-      {
-        showHamburger ?
-        <button className="open-hamburger provisional" onClick={() => setShowHamburger(false)} style={{ display: "none" }}><IoMdClose /></button>
-        :
-        <button className="open-hamburger provisional" onClick={() => setShowHamburger(true)} style={{ display: "none" }}><IoIosMenu /></button>
-      }
+      <button className="open-hamburger provisional" onClick={() => setShowHamburger(true)} style={{ display: "none" }}><IoIosMenu aria-label="close-menu" /></button>
       <div className="menu-items">
         {title === "Browse" ?
           <div className="menu-label">
-            <Link to="/browse" style={green}>Browse</Link>
+            <Link to="/browse" style={{ color: green}}>Browse</Link>
           </div>
           :
           <div className="menu-label">
@@ -122,7 +146,7 @@ const Header = ({ template, title }) => {
           if (title === parse(page.title)) {
             return (
               <div className="menu-label" key={page.uri}>
-                <a href={page.uri} style={green}>
+                <a href={page.uri} style={{ color: green}}>
                   {parse(page.title)}
                 </a>
               </div>

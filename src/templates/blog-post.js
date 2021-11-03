@@ -2,6 +2,7 @@ import React from "react"
 import { graphql } from "gatsby"
 // import Image from "gatsby-image"
 import parse from "html-react-parser"
+import { renderToStaticMarkup } from "react-dom/server"
 
 // We're using Gutenberg so we need the block styles
 // these are copied into this project due to a conflict in the postCSS
@@ -19,9 +20,18 @@ import 'katex/dist/katex.min.css'
 import TeX from '@matejmazur/react-katex'
 import Attribution from "../components/attribution"
 
-const BlogPostTemplate = ({ data: { post } }) => {
+const BlogPostTemplate = ({ data: { post, allFile } }) => {
+  // const files = allFile.nodes
+  // function findFile(url) {
+  //   let link
+  //   files.forEach((file) => {
+  //     if (file.publicURL.split("/").at(-1) === url.split("/").at(-1)) link = file.publicURL
+  //   })
+  //   return link
+  // }
 
-  // const pdfDate = new Date(2019, 12, 31)
+  // const articlePDF = findFile(post.articleMetadata.articleData.pdfLink.mediaItemUrl.split("/").at(-1))
+
   const issueReleased = new Date(
     parseInt(post.articleMetadata.articleData.issue.issue.released.substring(0, 4)),
     parseInt(post.articleMetadata.articleData.issue.issue.released.substring(4, 6)))
@@ -31,16 +41,7 @@ const BlogPostTemplate = ({ data: { post } }) => {
     parseInt(post.articleMetadata.articleData.publicationDate.substring(4, 6)),
     parseInt(post.articleMetadata.articleData.publicationDate.substring(6, 8)))
 
-  // const cover = await import(post.articleMetadata.articleData.pdf.mediaItemUrl)
-  // if (!!post.articleMetadata.articleData.pdf.mediaItemUrl)
-
-    
-
   const graphics = post.articleMetadata.graphics
-
-
-  // var parser = new DOMParser();
-  // var domTable = parser.parseFromString(table.table, 'text/html').body.firstElementChild
 
   var tables = []
 
@@ -49,8 +50,6 @@ const BlogPostTemplate = ({ data: { post } }) => {
   if (!!graphics.table3.table) tables.push(graphics.table3)
   if (!!graphics.table4.table) tables.push(graphics.table4)
   if (!!graphics.table5.table) tables.push(graphics.table5)
-
-  // tables.forEach(table => console.log(table.caption))
 
   const sidebarContentInfo =
     <section label="Info">
@@ -83,56 +82,27 @@ const BlogPostTemplate = ({ data: { post } }) => {
       </p>
     </section>
 
-  const sidebarContentRef =
-    <section label="Ref.">
-      <h3>References</h3>
-      <section className="refs">
-        {parse(post.articleMetadata.articleData.references)}
-      </section>
-    </section>
-
-  const sidebarContentFig =
-    <section label="Fig.">
-      <h3 className="figs">Figures</h3>
-      {figures.length > 0 ?
-        figures.map(fig =>
-          <Fig
-            key={fig.title}
-            figure={fig}
-            type="figure"
-          />
-        )
-        :
-        <p><em>No figures were found for this article.</em></p>
-      }
-      {tables.length > 0 ?
-        <section>
-          <h3 className="figs">Tables</h3>
-          {tables.map(table =>
-            <Fig
-              key={table.title}
-              figure={table}
-              type="table"
-            />
-          )}
-        </section>
-        :
-        <p><em>No tables were found for this article.</em></p>
-      }
-    </section>
+  // const toc = 
+  // <section label="">
+  //   {/* <h1></h1> */}
+  // </section>
+  const children = [sidebarContentInfo]
 
   return (
     <Layout template="article" title={post.title}>
       <Seo title={post.title} description={post.articleMetadata.articleData.abstract} />
 
       <header className="article-header">
+        <div className="provisional" style={{ display: "none" }}>
+          <span className="article-card-button" id="vol"><a href={post.articleMetadata.articleData.issue.uri}>{parse(post.articleMetadata.articleData.issue.title)}</a></span>
+        </div>
         <h1 className="main-heading" itemProp="headline">{parse(post.title)}</h1>
         <Attribution authorData={post.articleMetadata.authorData} />
         <div className="provisional" style={{ display: "none" }}>
           <span className="article-card-button" id="pubDate">{pubDate.toLocaleString('default', { dateStyle: 'long' })}</span>
           {!!post.articleMetadata.articleData.pdfLink.staticFile.publicURL && (<button className="article-card-button" href={post.articleMetadata.articleData.pdfLink.staticFile.publicURL}>Download</button>)}
           <button className="article-card-button copy-cite" onClick={() => {
-            navigator.clipboard.writeText(parse(post.articleMetadata.articleData.citation))
+            navigator.clipboard.writeText(renderToStaticMarkup(post.articleMetadata.articleData.citation).replace("<i>", "").replace("</i>", ""))
           }}>Copy citation</button>
         </div>
       </header>
@@ -143,9 +113,7 @@ const BlogPostTemplate = ({ data: { post } }) => {
       >
         <div className="sidebar-wrapper">
           <Sidebar>
-            {sidebarContentInfo}
-            {sidebarContentRef}
-            {sidebarContentFig}
+            {children}
           </Sidebar>
         </div>
 
@@ -164,7 +132,16 @@ const BlogPostTemplate = ({ data: { post } }) => {
                 replace: (domNode) => {
                   if (domNode.name === "pre") {
                     return (
-                      <TeX block>{parse(domNode.children[0].data, domNode)}</TeX>
+                      <TeX block>{parse(domNode.children[0].data)}</TeX>
+                    )
+                  }
+                  else if (domNode.name === "picture") {
+                    let figure = domNode.childNodes[1].attribs.src
+                    return (
+                      <a href={figure} target="_blank" rel="noreferrer">
+                        <img alt={figure} src={figure} />
+                        <div class="open-ext"></div>
+                      </a>
                     )
                   }
                 }
@@ -175,40 +152,25 @@ const BlogPostTemplate = ({ data: { post } }) => {
                 {parse(post.articleMetadata.articleData.acknowledgement)}
               </p>
             )}
-            <section className="provisional refs article-resp" style={{ display: "none" }}>
+            <section className="refs">
               <h2>References</h2>
-              {parse(post.articleMetadata.articleData.references)}
+              <section className="refs">
+                {parse(post.articleMetadata.articleData.references)}
+              </section>
             </section>
-            <section label="Fig.">
-              {figures.length > 0 ?
-                <section className="provisional article-resp" style={{ display: "none" }}>
-                  <h2 className="figs" >Figures</h2>
-                  {figures.map(fig =>
-                    <Fig
-                      key={fig.title}
-                      figure={fig}
-                      type="figure"
-                    />
-                  )}
-                </section>
-                :
-                null
-              }
-              {tables.length > 0 ?
-                <section className="provisional article-resp" style={{ display: "none" }}>
-                  <h2 className="figs">Tables</h2>
+            {tables.length > 0 && (
+              <section className="figs">
+                <h2>Tables</h2>
+                <section>
                   {tables.map(table =>
                     <Fig
                       key={table.title}
                       figure={table}
-                      type="table"
                     />
                   )}
                 </section>
-                :
-                null
-              }
-            </section>
+              </section>
+            )}
           </section>
         )}
 
@@ -244,6 +206,7 @@ export const pageQuery = graphql`
                     }
                     status
                     released
+                    volumeNo
                   }
                 }
               }
@@ -346,6 +309,11 @@ export const pageQuery = graphql`
                 title
               }
             }
+          }
+        }
+        allFile {
+          nodes {
+            publicURL
           }
         }
       }

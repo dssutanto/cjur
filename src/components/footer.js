@@ -1,4 +1,4 @@
-import React from "react"
+import * as React from "react"
 import { Link } from "gatsby"
 // import parse from "html-react-parser"
 import emailjs from "emailjs-com"
@@ -63,20 +63,22 @@ const Footer = () => {
           </ul>
           <ul className="footer-connect provisional" style={{ display: "none" }}>
             <h4>Connect with us</h4>
-            <li className="contact-info" key="address">
-              <a href="https://www.google.com/maps/search/Undergraduate+Research+Opportunities+University+of+British+Columbia+6133+University+Blvd+Vancouver+BC+V6T+1Z1/">
-                <FaRegMap />
-              </a>
-            </li>
-            <li className="contact-info" key="facebook">
-              <a href="https://www.facebook.com/cjuresearch"><FaFacebookF /></a>
-            </li>
-            <li className="contact-info" key="twitter">
-              <a href="https://twitter.com/cjuresearch"><FaTwitter /></a>
-            </li>
-            <li className="contact-info" key="linkedin">
-              <a href="https://www.linkedin.com/company/canadian-journal-of-undergraduate-research/"><FaLinkedinIn /></a>
-            </li>
+            <ul style={{ display:"flex", listStyle: "none", marginBottom:"0", justifyContent: "space-around" }}>
+              <li className="contact-info" key="address">
+                <a href="https://www.google.com/maps/search/Undergraduate+Research+Opportunities+University+of+British+Columbia+6133+University+Blvd+Vancouver+BC+V6T+1Z1/" target="_blank">
+                  <FaRegMap />
+                </a>
+              </li>
+              <li className="contact-info" key="facebook">
+                <a href="https://www.facebook.com/cjuresearch" target="_blank"><FaFacebookF aria-label="Facebook" /></a>
+              </li>
+              <li className="contact-info" key="twitter">
+                <a href="https://twitter.com/cjuresearch" target="_blank"><FaTwitter aria-label="Twitter"/></a>
+              </li>
+              <li className="contact-info" key="linkedin">
+                <a href="https://www.linkedin.com/company/canadian-journal-of-undergraduate-research/" target="_blank"><FaLinkedinIn aria-label="LinkedIn"/></a>
+              </li>
+            </ul>
           </ul>
           <form className="footer-contact" onSubmit={onSubmit}>
             <h4>Get in touch</h4>
@@ -103,7 +105,7 @@ const Footer = () => {
       </div>
       <div className="footer-bg-credits provisional" style={{ display: "none" }}>
         <div className="footer-wrapper">
-          <span>© CJUR | Logo and website by <a href="https://sutanto.dev/"> Derrick Sutanto</a></span>
+          <span>© CJUR | Developed by <a href="https://sutanto.dev/"> Derrick Sutanto</a></span>
         </div>
       </div>
     </footer>

@@ -1,3 +1,5 @@
+const credentials = require("./credentials")
+
 /**
  * 👋 Hey there!
  * This file is the starting point for your new WordPress/Gatsby site! 🚀
@@ -7,6 +9,9 @@
  */
 
 module.exports = {
+  siteMetadata: {
+    title: `Canadian Journal of Undergraduate Research`,
+  },
   /**
    * Adding plugins to this array adds them to your Gatsby site.
    *
@@ -31,8 +36,8 @@ module.exports = {
           `http://canadian-journal-of-undergraduate-research.local/graphql`,
         auth: {
           htaccess: {
-            username: `cjuresearchadmin`,
-            password: `Ggjp06O2pdEIs@k$0j03hKJg`,
+            username: credentials.name,
+            password: credentials.pass,
           },
         },
         schema: {
@@ -69,11 +74,11 @@ module.exports = {
       // See https://www.gatsbyjs.com/plugins/gatsby-plugin-manifest/?=gatsby-plugin-manifest
       resolve: `gatsby-plugin-manifest`,
       options: {
-        name: `Gatsby Starter WordPress Blog`,
-        short_name: `GatsbyJS & WP`,
+        name: `Canadian Journal of Undergraduate Research`,
+        short_name: `CJUR`,
         start_url: `/`,
         background_color: `#ffffff`,
-        theme_color: `#663399`,
+        theme_color: `#74846c`,
         display: `minimal-ui`,
         icon: `content/assets/CJUR-white.png`,
       },
@@ -87,13 +92,5 @@ module.exports = {
      * To learn more, visit: https://gatsby.dev/offline
      */
     // `gatsby-plugin-offline`,
-
-    {
-      resolve: `gatsby-plugin-remote-images`,
-      options: {
-        nodeType: 'MyNodes',
-        imagePath: 'path.to.image',
-      },
-    },
   ],
 }

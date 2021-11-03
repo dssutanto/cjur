@@ -7,6 +7,7 @@ import Layout from "../components/layout"
 import Bio from "../components/bio"
 
 const AboutPage = ({ data: { page } }) => {
+
     const editors = page.editorialBoard
     const chiefs = []
     const otherEditors = []
@@ -40,6 +41,7 @@ const AboutPage = ({ data: { page } }) => {
                     :
                     null
                 }
+                <hr />
                 <div className="editorial-board">
                     {otherEditors.filter((editor) => !!editor.surname && !!editor.givenName && !!editor.university && !!editor.title ? true : false).map(editor => {
                         return (

@@ -17,17 +17,18 @@ const Sidebar = ({ children }) => {
             <ul className="tabs">
                 {children.map((tab) => {
                     return (
-                        <li
+                        <div
                             key={tab.props.label}
                             className={tab.props.label === activeTab ? "active" : ""}
                         >
                             <a
                                 href={"#" + tab.props.label}
                                 onClick={(e) => { handleClick(e, tab.props.label) }}
+                                style={{ display: "none" }}
                             >
                                 {tab.props.label}
                             </a>
-                        </li>
+                        </div>
                     );
                 })}
             </ul>

@@ -17,6 +17,7 @@ import Layout from "../components/layout"
 import ArticleCard from "../components/articlecard"
 
 const IssueTemplate = ({ data: { page, allWpPost } }) => {
+
     const posts = allWpPost.nodes
 
     if (typeof (page.issue.chiefEditor) === "string") page.issue.chiefEditor = page.issue.chiefEditor.split(/\r\n/)
@@ -34,7 +35,7 @@ const IssueTemplate = ({ data: { page, allWpPost } }) => {
         <Layout template="issue" title={parse(page.title)}>
             <div className="issue-header" style={{ backgroundImage: `url(${page.issue.heroBanner.staticFile.publicURL})` }}>
                 <div className="issue-title">
-                    <span className="pub-date">{released.toLocaleString('default', {month: 'long', year: 'numeric'})}</span>
+                    <span className="pub-date">{released.toLocaleString('default', { month: 'long', year: 'numeric' })}</span>
                     {/* <br /> */}
                     <h1 itemProp="headline">{parse(page.title)}</h1>
                 </div>
@@ -43,14 +44,14 @@ const IssueTemplate = ({ data: { page, allWpPost } }) => {
                 className="issue-catalogue"
                 itemScope
             >
-                <div className="issue-big">
+                <div className="issue-main">
                     <div>
-                        {!!page.issue.frontMatter.staticFile.publicURL && (
+                        {!!page.issue.frontMatterLink.staticFile.publicURL && (
                             <div className="latest-articles">
                                 <h2>Front matter</h2>
                                 <ArticleCard
                                     title="Front matter"
-                                    pdf={page.issue.frontMatter.staticFile.publicURL}
+                                    pdf={page.issue.frontMatterLink.staticFile.publicURL}
                                 />
                             </div>
                         )}
@@ -69,73 +70,71 @@ const IssueTemplate = ({ data: { page, allWpPost } }) => {
                                         abstract={parse(post.articleMetadata.articleData.abstract)}
                                         citation={parse(post.articleMetadata.articleData.citation)}
                                         date={post.articleMetadata.articleData.publicationDate}
+                                        authorsOnly={true}
                                     />
                                 )
                             })}
                         </div>
                     </div>
                     <div className="issue-team">
+                        {
+                            page.issue.chiefEditor.length > 1 ?
+                                <h2>Editors-in-Chief</h2>
+                                :
+                                <h2>Editor-in-Chief</h2>
+                        }
                         <section>
-                            {
-                                page.issue.chiefEditor.length > 1 ?
-                                    <h2>Editors-in-Chief</h2>
-                                    :
-                                    <h2>Editor-in-Chief</h2>
-                            }
                             {page.issue.chiefEditor.map((chief) => <li key={chief}>{chief}</li>)}
                         </section>
+                        {
+                            page.issue.editors.length > 1 ?
+                                <h2>Editors</h2>
+                                :
+                                <h2>Editor</h2>
+                        }
                         <section>
-                            {
-                                page.issue.editors.length > 1 ?
-                                    <h2>Editors</h2>
-                                    :
-                                    <h2>Editor</h2>
-                            }
                             {page.issue.editors.map((editor) => <li key={editor}>{editor}</li>)}
                         </section>
                         {!!page.issue.copyeditors ?
-                            <section>
-                                {
-                                    page.issue.copyeditors.length > 1 ?
-                                        <h2>Subeditors</h2>
-                                        :
-                                        <h2>Subeditor</h2>
-                                }
-                                {page.issue.copyeditors.map((sub) => <li key={sub}>{sub}</li>)}
-                            </section>
+                            page.issue.copyeditors.length > 1 ?
+                                <h2>Subeditors</h2>
+                                :
+                                <h2>Subeditor</h2>
+                                &&
+                                < section >
+                                    {page.issue.copyeditors.map((sub) => <li key={sub}>{sub}</li>)}
+                                </section>
                             :
                             null
                         }
                         {!!page.issue.designers ?
-                            <section>
-                                {
-                                    page.issue.designers.length > 1 ?
-                                        <h2>Designers</h2>
-                                        :
-                                        <h2>Designer</h2>
-                                }
-                                {page.issue.designers.map((designer) => <li key={designer}>{designer}</li>)}
-                            </section>
+                            page.issue.designers.length > 1 ?
+                                <h2>Designers</h2>
+                                :
+                                <h2>Designer</h2>
+                                &&
+                                <section>
+                                    {page.issue.designers.map((designer) => <li key={designer}>{designer}</li>)}
+                                </section>
                             :
                             null
                         }
                         {!!page.issue.advisers ?
-                            <section>
-                                {
-                                    page.issue.advisers.length > 1 ?
-                                        <h2>Advisers</h2>
-                                        :
-                                        <h2>Adviser</h2>
-                                }
-                                {page.issue.advisers.map((adviser) => <li key={adviser}>{adviser}</li>)}
-                            </section>
+                            page.issue.advisers.length > 1 ?
+                                <h2>Advisers</h2>
+                                :
+                                <h2>Adviser</h2>
+                                &&
+                                <section>
+                                    {page.issue.advisers.map((adviser) => <li key={adviser}>{adviser}</li>)}
+                                </section>
                             :
                             null
                         }
                     </div>
                 </div>
             </article>
-        </Layout>
+        </Layout >
     )
 }
 
@@ -164,7 +163,7 @@ export const issueQuery = graphql`
                   publicURL
                 }
             }
-            frontMatter {
+            frontMatterLink {
                 staticFile {
                   publicURL
                 }
@@ -268,15 +267,70 @@ export const issueQuery = graphql`
                   surname
                   surnameFirst
                 }
-                author10 {
-                  affiliation
-                  givenName
-                  surname
-                  surnameFirst
+                authorData {
+                    author1 {
+                        affiliation
+                        givenName
+                        surname
+                        surnameFirst
+                    }
+                    author2 {
+                        affiliation
+                        givenName
+                        surname
+                        surnameFirst
+                    }
+                    author3 {
+                        affiliation
+                        givenName
+                        surname
+                        surnameFirst
+                    }
+                    author4 {
+                        affiliation
+                        givenName
+                        surname
+                        surnameFirst
+                    }
+                    author5 {
+                        affiliation
+                        givenName
+                        surname
+                        surnameFirst
+                    }
+                    author6 {
+                        affiliation
+                        givenName
+                        surname
+                        surnameFirst
+                    }
+                    author7 {
+                        affiliation
+                        givenName
+                        surname
+                        surnameFirst
+                    }
+                    author8 {
+                        affiliation
+                        givenName
+                        surname
+                        surnameFirst
+                    }
+                    author9 {
+                        affiliation
+                        givenName
+                        surname
+                        surnameFirst
+                    }
+                    author10 {
+                        affiliation
+                        givenName
+                        surname
+                        surnameFirst
+                    }
                 }
             }
-          }
         }
-      }
-  }
+    }
+}
 `

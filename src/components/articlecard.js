@@ -1,4 +1,5 @@
 import React, { useState } from "react"
+import { renderToStaticMarkup } from "react-dom/server"
 import Attribution from "../components/attribution"
 
 const ArticleCard = ({ uri, title, authorData, pdf, abstract, citation, date, authorsOnly }) => {
@@ -13,6 +14,9 @@ const ArticleCard = ({ uri, title, authorData, pdf, abstract, citation, date, au
     const [showModal, setShowModal] = useState(false)
     const openModal = () => setShowModal(prev => !prev)
 
+    const [popup, showPopup] = useState(false)
+    const openPopup = () => showPopup(prev => !prev)
+
     return (
         <div key={title} className="article-card">
             <h3>
@@ -20,7 +24,7 @@ const ArticleCard = ({ uri, title, authorData, pdf, abstract, citation, date, au
                     <a href={"/article" + uri}>{title}</a>
                     :
                     !!pdf ?
-                        <a href={pdf}>{title}</a>
+                        <a href={pdf} target="_blank" rel="noreferrer">{title}</a>
                         :
                         title
                 }
@@ -36,12 +40,40 @@ const ArticleCard = ({ uri, title, authorData, pdf, abstract, citation, date, au
                     <span className="article-card-button" id="pubDate">{pubDate.toLocaleString('default', { dateStyle: 'long' })}</span>
                 )}
                 {!!pdf && !!citation && (
-                    <>
-                        <button className="article-card-button" href={pdf}>Download</button>
+                    <span className="article-options">
+                        {
+                            !!date ?
+                                <a className="article-card-button" href={pdf} target="_blank" rel="noreferrer">Download</a>
+                                :
+                                <a className="article-card-button" href={pdf} target="_blank" rel="noreferrer" style={{ paddingLeft: "0" }}>Download</a>
+                        }
                         <button className="article-card-button copy-cite" onClick={() => {
-                            navigator.clipboard.writeText(citation)
-                        }}>Copy citation</button>
-                    </>
+                            navigator.clipboard.writeText(renderToStaticMarkup(citation).replace("<i>", "").replace("</i>", ""))
+                            openPopup()
+                            setTimeout(() => {
+                                openPopup()
+                            }, 1500)
+                        }}>Copy citation
+                            {popup ?
+                                <div
+                                    style={{
+                                        position: "fixed",
+                                        padding: "var(--spacing-4)",
+                                        backgroundColor: "#74846ccc",
+                                        verticalAlign: "top",
+                                        color: "white",
+                                        top: "25%",
+                                        left: "50%",
+                                        transform: "translateX(-50%)"
+                                    }}
+                                >
+                                    Copied!
+                                </div>
+                                :
+                                null
+                            }
+                        </button>
+                    </span>
                 )}
             </div>
             {!!abstract && (
