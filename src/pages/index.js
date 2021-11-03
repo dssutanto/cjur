@@ -13,11 +13,11 @@ const HomePage = ({ data: { current, top, posts } }) => {
   ).toLocaleString('default', { month: 'long'})
   return (
     <Layout style={{ padding: "0" }}>
-      <div className="issue-header" style={{ backgroundImage: `url(${currentIssue.issue.heroBanner.mediaItemUrl})` }}>
+      <div className="issue-header" style={{ backgroundImage: `url(${currentIssue.issue.heroBanner.staticFile.publicURL})` }}>
         <h1>Our {currentIssue.issue.releasedDate} issue out now</h1>
         <div className="hero-buttons">
           <button href={currentIssue.uri} className="dark" style={{ fontSize:"var(--fontSize-2)"}}>Read</button>
-          <button href={currentIssue.issue.pdf.mediaItemUrl} className="dark" style={{ fontSize:"var(--fontSize-2)"}}>Download PDF</button>
+          <button href={currentIssue.issue.pdfLink.staticFile.publicURL} className="dark" style={{ fontSize:"var(--fontSize-2)"}}>Download PDF</button>
         </div>
       </div>
       <article className="home-body">
@@ -46,7 +46,7 @@ const HomePage = ({ data: { current, top, posts } }) => {
             uri={posts.nodes[0].uri}
             title={posts.nodes[0].title}
             authorData={posts.nodes[0].articleMetadata.authorData}
-            pdf={posts.nodes[0].articleMetadata.articleData.pdf.mediaItemUrl}
+            pdf={posts.nodes[0].articleMetadata.articleData.pdfLink.staticFile.publicURL}
             citation={posts.nodes[0].articleMetadata.articleData.citation}
             abstract={posts.nodes[0].articleMetadata.articleData.abstract}
           />
@@ -68,13 +68,19 @@ export const pageQuery = graphql`
         issue {
           released
           cover {
-            mediaItemUrl
+            staticFile {
+              publicURL
+            }
           }
-          pdf {
-            mediaItemUrl
+          pdfLink {
+            staticFile {
+              publicURL
+            }
           }
           heroBanner {
-            mediaItemUrl
+            staticFile {
+              publicURL
+            }
           }
         }
       }
@@ -108,8 +114,10 @@ export const pageQuery = graphql`
         articleMetadata {
           articleData {
             abstract
-            pdf {
-              mediaItemUrl
+            pdfLink {
+              staticFile {
+                publicURL
+              }
             }
             citation
           }

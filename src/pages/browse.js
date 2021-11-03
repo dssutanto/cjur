@@ -159,7 +159,7 @@ const BrowseIssues = ({
           {/* <h2>Current Issue: <span className="current-issue-title">{currentIssue.issue.released.toLocaleString('default', { month: 'long' }) + " " + currentIssue.issue.released.toLocaleString('default', { year: 'numerical' })}: <a href={currentIssue.uri}>{parse(currentIssue.title)}</a></span></h2> */}
           <h2>Current Issue: <span className="current-issue-title"><a href={currentIssue.uri}>{currentIssueReleased}: {parse(currentIssue.title)}</a></span></h2>
           <div className="issue-big">
-            <div className="issue-big-cover"><img src={currentIssue.issue.cover.mediaItemUrl} alt="" className="cover" /></div>
+            <div className="issue-big-cover"><img src={currentIssue.issue.cover.staticFile.publicURL} alt="" className="cover" /></div>
             <div className="latest-articles">
               {/* <ArticleCard
                 key={currentLeader.uri}
@@ -179,7 +179,7 @@ const BrowseIssues = ({
                     uri={article.uri}
                     title={parse(article.title)}
                     authorData={article.articleMetadata.authorData}
-                    pdf={article.articleMetadata.articleData.pdf.mediaItemUrl}
+                    pdf={article.articleMetadata.articleData.pdfLink.staticFile.publicURL}
                     abstract={parse(article.articleMetadata.articleData.abstract)}
                     citation={parse(article.articleMetadata.articleData.citation)}
                     authorsOnly={true}
@@ -202,7 +202,7 @@ const BrowseIssues = ({
               <div key={issue.uri} className="issue-block">
                 <a href={issue.uri} className="issue-display">
                   <div className="image-wrapper">
-                    <img src={issue.issue.cover.mediaItemUrl} alt="" className="cover" />
+                    <img src={issue.issue.cover.staticFile.publicURL} alt="" className="cover" />
                   </div>
                   <section>
                     <h3>{parse(issue.title)}</h3>
@@ -226,7 +226,7 @@ const BrowseIssues = ({
                     uri={article.uri}
                     title={parse(article.title)}
                     authorData={article.articleMetadata.authorData}
-                    pdf={article.articleMetadata.articleData.pdf.mediaItemUrl}
+                    pdf={article.articleMetadata.articleData.pdfLink.staticFile.publicURL}
                     abstract={parse(article.articleMetadata.articleData.abstract)}
                     citation={parse(article.articleMetadata.articleData.citation)}
                     authorsOnly={true}
@@ -247,9 +247,9 @@ const BrowseIssues = ({
           <Slider {...settingsSpecial}>
             {specials.map(issue => (
               <div key={issue.title} className="issue-block">
-                <a href={issue.specialIssue.pdf.mediaItemUrl} className="issue-display">
+                <a href={issue.specialIssue.pdfLink.staticFile.publicURL} className="issue-display">
                   <div className="image-wrapper">
-                    <img src={issue.specialIssue.cover.mediaItemUrl} alt="" className="cover" />
+                    <img src={issue.specialIssue.cover.staticFile.publicURL} alt="" className="cover" />
                   </div>
                   <section>
                     <h3>{parse(issue.title)}</h3>
@@ -286,17 +286,23 @@ export const pageQuery = graphql`
             }
           }
           cover {
-            mediaItemUrl
+            staticFile {
+              publicURL
+            }
           }
         }
         specialIssue {
           isSpecialIssue
           description
           cover {
-            mediaItemUrl
+            staticFile {
+              publicURL
+            }
           }
-          pdf {
-            mediaItemUrl
+          pdfLink {
+            staticFile {
+              publicURL
+            }
           }
           published
         }
@@ -313,8 +319,10 @@ export const pageQuery = graphql`
             articleData {
               abstract
               citation
-              pdf {
-                mediaItemUrl
+              pdfLink {
+                staticFile {
+                  publicURL
+                }
               }
               issue {
                 ... on WpPage {

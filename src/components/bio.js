@@ -5,7 +5,7 @@ import parse from "html-react-parser"
 const Bio = ({ editor }) => {
   return (
     <div className="editor">
-      <div className="img-cropper"><img src={editor.headshot.mediaItemUrl} alt="headshot" className="headshot" /></div>
+      <div className="img-cropper"><img src={editor.headshot.staticFile.publicURL} alt="headshot" className="headshot" /></div>
       <div className="editor-details">
         <span className="editor-name">{parse(editor.givenName) + ' ' + parse(editor.surname)}</span>
         <span className="editor-title">{editor.title.join(", ")} | {editor.university}</span>

@@ -38,40 +38,11 @@ const BlogPostTemplate = ({ data: { post } }) => {
 
   const graphics = post.articleMetadata.graphics
 
-  var figures = []
-  // var figures2 = []
-  // if (!!graphics.fig1) var fig1 = await import(graphics.fig1).then(figures2.push({ title: fig1.altText, figure: fig1.mediaItemUrl, caption: fig1.caption }))
-  // if (!!graphics.fig2) const fig2 = await import(graphics.fig2).then(figures2.push({ title: fig2.altText, figure: fig2.mediaItemUrl, caption: fig2.caption }))
-  // if (!!graphics.fig3) const fig3 = await import(graphics.fig3).then(figures2.push({ title: fig3.altText, figure: fig3.mediaItemUrl, caption: fig3.caption }))
-  // if (!!graphics.fig4) const fig4 = await import(graphics.fig4).then(figures2.push({ title: fig4.altText, figure: fig4.mediaItemUrl, caption: fig4.caption }))
-  // if (!!graphics.fig5) const fig5 = await import(graphics.fig5).then(figures2.push({ title: fig5.altText, figure: fig5.mediaItemUrl, caption: fig5.caption }))
-  // if (!!graphics.fig6) const fig6 = await import(graphics.fig6).then(figures2.push({ title: fig6.altText, figure: fig6.mediaItemUrl, caption: fig6.caption }))
-  // if (!!graphics.fig7) const fig7 = await import(graphics.fig7).then(figures2.push({ title: fig7.altText, figure: fig7.mediaItemUrl, caption: fig7.caption }))
-  // if (!!graphics.fig8) const fig8 = await import(graphics.fig8).then(figures2.push({ title: fig8.altText, figure: fig8.mediaItemUrl, caption: fig8.caption }))
-  // if (!!graphics.fig9) const fig9 = await import(graphics.fig9).then(figures2.push({ title: fig9.altText, figure: fig9.mediaItemUrl, caption: fig9.caption }))
-  // if (!!graphics.fig10) const fig10 = await import(graphics.fig10).then(figures2.push({ title: fig10.altText, figure: fig10.mediaItemUrl, caption: fig10.caption }))
-
-  if (!!graphics.fig1) figures.push(graphics.fig1)
-  if (!!graphics.fig2) figures.push(graphics.fig2)
-  if (!!graphics.fig3) figures.push(graphics.fig3)
-  if (!!graphics.fig4) figures.push(graphics.fig4)
-  if (!!graphics.fig5) figures.push(graphics.fig5)
-  if (!!graphics.fig6) figures.push(graphics.fig6)
-  if (!!graphics.fig7) figures.push(graphics.fig7)
-  if (!!graphics.fig8) figures.push(graphics.fig8)
-  if (!!graphics.fig9) figures.push(graphics.fig9)
-  if (!!graphics.fig10) figures.push(graphics.fig10)
 
   // var parser = new DOMParser();
   // var domTable = parser.parseFromString(table.table, 'text/html').body.firstElementChild
 
   var tables = []
-  // var tables2 = []
-  // if (!!graphics.table1.table) const table1 = await import(graphics.table1).then(tables2.push({ title: table1.title, table: table1.table, caption: table1.caption }))
-  // if (!!graphics.table2.table) const table2 = await import(graphics.table2).then(tables2.push({ title: table2.title, table: table2.table, caption: table2.caption }))
-  // if (!!graphics.table3.table) const table3 = await import(graphics.table3).then(tables2.push({ title: table3.title, table: table3.table, caption: table3.caption }))
-  // if (!!graphics.table4.table) const table4 = await import(graphics.table4).then(tables2.push({ title: table4.title, table: table4.table, caption: table4.caption }))
-  // if (!!graphics.table5.table) const table5 = await import(graphics.table5).then(tables2.push({ title: table5.title, table: table5.table, caption: table5.caption }))
 
   if (!!graphics.table1.table) tables.push(graphics.table1)
   if (!!graphics.table2.table) tables.push(graphics.table2)
@@ -86,15 +57,15 @@ const BlogPostTemplate = ({ data: { post } }) => {
       <h3>About</h3>
       <section className="vol-info">
         <img
-          src={post.articleMetadata.articleData.issue.issue.cover.mediaItemUrl}
+          src={post.articleMetadata.articleData.issue.issue.cover.staticFile.publicURL}
           alt="cover"
           className="cover"
         />
         <p className="sidebar-issue-info">
           <span className="vol-header"><a href={post.articleMetadata.articleData.issue.uri}>{parse(post.articleMetadata.articleData.issue.title)}</a></span>
           <span className="m-header">{issueReleased.toLocaleString('default', { month: 'long', year: 'numeric' })}</span>
-          {!!post.articleMetadata.articleData.pdf.mediaItemUrl && (
-            <button href={post.articleMetadata.articleData.pdf.mediaItemUrl} className="dark">Download PDF</button>
+          {!!post.articleMetadata.articleData.pdfLink.staticFile.publicURL && (
+            <button href={post.articleMetadata.articleData.pdfLink.staticFile.publicURL} className="dark">Download PDF</button>
           )}
         </p>
       </section>
@@ -159,7 +130,7 @@ const BlogPostTemplate = ({ data: { post } }) => {
         <Attribution authorData={post.articleMetadata.authorData} />
         <div className="provisional" style={{ display: "none" }}>
           <span className="article-card-button" id="pubDate">{pubDate.toLocaleString('default', { dateStyle: 'long' })}</span>
-          {!!post.articleMetadata.articleData.pdf.mediaItemUrl && (<button className="article-card-button" href={post.articleMetadata.articleData.pdf.mediaItemUrl}>Download</button>)}
+          {!!post.articleMetadata.articleData.pdfLink.staticFile.publicURL && (<button className="article-card-button" href={post.articleMetadata.articleData.pdfLink.staticFile.publicURL}>Download</button>)}
           <button className="article-card-button copy-cite" onClick={() => {
             navigator.clipboard.writeText(parse(post.articleMetadata.articleData.citation))
           }}>Copy citation</button>
@@ -267,7 +238,9 @@ export const pageQuery = graphql`
                   uri
                   issue {
                     cover {
-                      mediaItemUrl
+                      staticFile {
+                        publicURL
+                      }
                     }
                     status
                     released
@@ -276,8 +249,10 @@ export const pageQuery = graphql`
               }
               pageStart
               pageEnd
-              pdf {
-                mediaItemUrl
+              pdfLink {
+                staticFile {
+                  publicURL
+                }
               }
               references
               citation
@@ -345,66 +320,6 @@ export const pageQuery = graphql`
               }
             }
             graphics {
-              fig1 {
-                altText
-                caption
-                mediaItemUrl
-                title
-              }
-              fig2 {
-                altText
-                caption
-                mediaItemUrl
-                title
-              }
-              fig3 {
-                altText
-                caption
-                mediaItemUrl
-                title
-              }
-              fig4 {
-                altText
-                caption
-                mediaItemUrl
-                title
-              }
-              fig5 {
-                altText
-                caption
-                mediaItemUrl
-                title
-              }
-              fig6 {
-                altText
-                caption
-                mediaItemUrl
-                title
-              }
-              fig7 {
-                altText
-                caption
-                mediaItemUrl
-                title
-              }
-              fig8 {
-                altText
-                caption
-                mediaItemUrl
-                title
-              }
-              fig9 {
-                altText
-                caption
-                mediaItemUrl
-                title
-              }
-              fig10 {
-                altText
-                caption
-                mediaItemUrl
-                title
-              }
               table1 {
                 caption
                 table

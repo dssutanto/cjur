@@ -32,7 +32,7 @@ const IssueTemplate = ({ data: { page, allWpPost } }) => {
 
     return (
         <Layout template="issue" title={parse(page.title)}>
-            <div className="issue-header" style={{ backgroundImage: `url(${page.issue.heroBanner.mediaItemUrl})` }}>
+            <div className="issue-header" style={{ backgroundImage: `url(${page.issue.heroBanner.staticFile.publicURL})` }}>
                 <div className="issue-title">
                     <span className="pub-date">{released.toLocaleString('default', {month: 'long', year: 'numeric'})}</span>
                     {/* <br /> */}
@@ -45,12 +45,12 @@ const IssueTemplate = ({ data: { page, allWpPost } }) => {
             >
                 <div className="issue-big">
                     <div>
-                        {!!page.issue.frontMatter.mediaItemUrl && (
+                        {!!page.issue.frontMatter.staticFile.publicURL && (
                             <div className="latest-articles">
                                 <h2>Front matter</h2>
                                 <ArticleCard
                                     title="Front matter"
-                                    pdf={page.issue.frontMatter.mediaItemUrl}
+                                    pdf={page.issue.frontMatter.staticFile.publicURL}
                                 />
                             </div>
                         )}
@@ -65,7 +65,7 @@ const IssueTemplate = ({ data: { page, allWpPost } }) => {
                                         uri={post.uri}
                                         title={parse(post.title)}
                                         authorData={post.articleMetadata.authorData}
-                                        pdf={post.articleMetadata.articleData.pdf.mediaItemUrl}
+                                        pdf={post.articleMetadata.articleData.pdfLink.staticFile.publicURL}
                                         abstract={parse(post.articleMetadata.articleData.abstract)}
                                         citation={parse(post.articleMetadata.articleData.citation)}
                                         date={post.articleMetadata.articleData.publicationDate}
@@ -155,13 +155,19 @@ export const issueQuery = graphql`
             editors
             released
             cover {
-              mediaItemUrl
+                staticFile {
+                  publicURL
+                }
             }
             heroBanner {
-                mediaItemUrl
+                staticFile {
+                  publicURL
+                }
             }
             frontMatter {
-                mediaItemUrl
+                staticFile {
+                  publicURL
+                }
             }
             nextIssue {
                 ... on WpPage {
@@ -196,7 +202,9 @@ export const issueQuery = graphql`
               citation
               publicationDate
               pdf {
-                mediaItemUrl
+                staticFile {
+                  publicURL
+                }
               }
               issue {
                 ... on WpPage {
